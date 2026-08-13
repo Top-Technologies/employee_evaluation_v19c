@@ -1,0 +1,30 @@
+{
+    'name': 'Employee Evaluation',
+    'version': '19.0.1.0.0',
+    'author': 'Top Technologies',
+    'category': 'Human Resources',
+    'summary': 'Employee performance evaluation with multi-step approval workflow',
+    'description': 'Comprehensive employee evaluation system integrated into HR module with 5-step approval workflow: Direct Manager, Managing Director, Operations Director, Employee Review, and HR Approval.',
+    'depends': ['base', 'hr', 'mail'],
+    'data': [
+        'security/security.xml',
+        'security/ir.model.access.csv',
+        'views/res_config_settings_views.xml',
+        'views/employee_evaluation_views.xml',
+        'views/hr_employee_inherit_views.xml',
+        'views/menu.xml',
+        'data/email_templates.xml',
+        'reports/report_evaluation.xml',
+    ],
+    'assets': {
+        'web.assets_backend': [
+            'employee_evaluation_v19c/static/src/css/radio_style.css',
+            'employee_evaluation_v19c/static/src/js/ethiopian_date.min.js',
+            'employee_evaluation_v19c/static/src/js/ethiopian_date_widget.js',
+            'employee_evaluation_v19c/static/src/xml/ethiopian_date_field.xml',
+        ],
+    },
+    'application': False,
+    'installable': True,
+    'license': 'LGPL-3',
+}

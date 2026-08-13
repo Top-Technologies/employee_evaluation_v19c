@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- ==================== GROUPS ==================== -->
+
+        <!-- Base Employee Group -->
+        <record id="group_evaluation_employee" model="res.groups">
+            <field name="name">Employee</field>
+        </record>
+
+        <!-- Make Employee default for all internal users -->
+        <record id="base.group_user" model="res.groups">
+            <field name="implied_ids" eval="[(4, ref('group_evaluation_employee'))]"/>
+        </record>
+
+        <!-- Direct Manager Group -->
+        <record id="group_evaluation_manager" model="res.groups">
+            <field name="name">Direct Manager</field>
+            <field name="implied_ids" eval="[(4, ref('group_evaluation_employee'))]"/>
+        </record>
+
+        <!-- Managing Director Group -->
+        <record id="group_evaluation_md" model="res.groups">
+            <field name="name">Managing Director</field>
+            <field name="implied_ids" eval="[(4, ref('group_evaluation_manager'))]"/>
+        </record>
+
+        <!-- Operations Director Group -->
+        <record id="group_evaluation_od" model="res.groups">
+            <field name="name">Operations Director</field>
+            <field name="implied_ids" eval="[(4, ref('group_evaluation_manager'))]"/>
+        </record>
+
+        <!-- HR Manager Group (full access) -->
+        <record id="group_evaluation_hr" model="res.groups">
+            <field name="name">HR Manager</field>
+            <field name="implied_ids" eval="[(4, ref('group_evaluation_md')), (4, ref('group_evaluation_od'))]"/>
+            <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        </record>
+
+        <!-- System Administrators automatically get HR Manager access -->
+        <record id="base.group_system" model="res.groups">
+            <field name="implied_ids" eval="[(4, ref('group_evaluation_hr'))]"/>
+        </record>
+
+        <!-- HR Officers automatically get HR Manager access -->
+        <record id="hr.group_hr_user" model="res.groups">
+            <field name="implied_ids" eval="[(4, ref('group_evaluation_hr'))]"/>
+        </record>
+
+        <!-- HR Managers automatically get HR Manager access -->
+        <record id="hr.group_hr_manager" model="res.groups">
+            <field name="implied_ids" eval="[(4, ref('group_evaluation_hr'))]"/>
+        </record>
+
+        <!-- ==================== RECORD RULES ==================== -->
+
+        <!-- Employee: Can see ONLY their own evaluations and their subordinates -->
+        <record id="rule_evaluation_employee" model="ir.rule">
+            <field name="name">Employee: Own and Subordinate Evaluations</field>
+            <field name="model_id" ref="model_employee_evaluation"/>
+            <field name="groups" eval="[(4, ref('group_evaluation_employee'))]"/>
+            <field name="domain_force">['|', ('employee_id.user_id', '=', user.id), ('employee_id.parent_id.user_id', '=', user.id)]</field>
+        </record>
+
+        <!-- Direct Manager: Can see evaluations of their subordinates + own created -->
+        <record id="rule_evaluation_manager" model="ir.rule">
+            <field name="name">Manager: Subordinate Evaluations</field>
+            <field name="model_id" ref="model_employee_evaluation"/>
+            <field name="groups" eval="[(4, ref('group_evaluation_manager'))]"/>
+            <field name="domain_force">['|', '|', ('create_uid', '=', user.id), ('employee_id.parent_id.user_id', '=', user.id), ('employee_id.user_id', '=', user.id)]</field>
+        </record>
+
+        <!-- Managing Director: Can see all evaluations -->
+        <record id="rule_evaluation_md" model="ir.rule">
+            <field name="name">MD: All Evaluations</field>
+            <field name="model_id" ref="model_employee_evaluation"/>
+            <field name="groups" eval="[(4, ref('group_evaluation_md'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- Operations Director: Can see all evaluations -->
+        <record id="rule_evaluation_od" model="ir.rule">
+            <field name="name">OD: All Evaluations</field>
+            <field name="model_id" ref="model_employee_evaluation"/>
+            <field name="groups" eval="[(4, ref('group_evaluation_od'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- HR Manager: Can see all evaluations -->
+        <record id="rule_evaluation_hr" model="ir.rule">
+            <field name="name">HR: All Evaluations</field>
+            <field name="model_id" ref="model_employee_evaluation"/>
+            <field name="groups" eval="[(4, ref('group_evaluation_hr'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="employee_evaluation_v19c.EthiopianDateWidget">
+        <div class="o_ethiopian_date_widget d-flex align-items-center position-relative">
+            <input type="text" class="o_input" t-ref="input" t-on-change="onChange" t-on-click="togglePicker" placeholder="DD MM YYYY"/>
+            <button class="btn btn-secondary fa fa-calendar ms-1" t-on-click="togglePicker" tabindex="-1"></button>
+            
+            <div t-if="state.showPicker" class="o_eth_picker_popover position-absolute bg-white border p-2 shadow rounded" style="top: 100%; left: 0; z-index: 1000; width: 260px;">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <button class="btn btn-sm btn-light" t-on-click="() => this.changeYear(-1)">&lt;&lt;</button>
+                    <button class="btn btn-sm btn-light" t-on-click="() => this.changeMonth(-1)">&lt;</button>
+                    <span class="fw-bold">
+                        <t t-esc="amharicMonths[state.viewMonth - 1]"/> <t t-esc="state.viewYear"/>
+                    </span>
+                    <button class="btn btn-sm btn-light" t-on-click="() => this.changeMonth(1)">&gt;</button>
+                    <button class="btn btn-sm btn-light" t-on-click="() => this.changeYear(1)">&gt;&gt;</button>
+                </div>
+                
+                <table class="table table-sm table-borderless text-center mb-0">
+                    <thead>
+                        <tr>
+                            <t t-foreach="weekDays" t-as="wday" t-key="wday">
+                                <th class="p-0"><small t-esc="wday"/></th>
+                            </t>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="calendarRows" t-as="row" t-key="row.id">
+                            <tr>
+                                <t t-foreach="row.days" t-as="item" t-key="item.id">
+                                    <td class="p-0">
+                                        <button t-if="item.day" class="btn btn-sm btn-block"
+                                            t-att-class="item.day === props.value ? 'btn-primary' : 'btn-light'"
+                                            t-on-click="() => this.selectDate(item.day)">
+                                            <t t-esc="item.day"/>
+                                        </button>
+                                    </td>
+                                </t>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </t>
+
+</templates>

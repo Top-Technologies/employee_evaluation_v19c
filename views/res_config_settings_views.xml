@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Res Config Settings Form Inherit -->
+    <record id="res_config_settings_view_form_inherit_evaluation" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.employee.evaluation</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="50" />
+        <field name="inherit_id" ref="base.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app string="Employee Evaluation"
+                     name="employee_evaluation_v19c"
+                     groups="employee_evaluation_v19c.group_evaluation_hr">
+                    <block title="Directors Configuration" id="evaluation_directors_setting">
+                        <setting string="Managing Director"
+                                 help="Designate the default Managing Director for employee evaluation approvals">
+                            <field name="eval_md_user_id"/>
+                        </setting>
+                        <setting string="Operations Director"
+                                 help="Designate the default Operations Director for employee evaluation approvals">
+                            <field name="eval_od_user_id"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Action to Open Evaluation Settings -->
+    <record id="action_evaluation_config_settings" model="ir.actions.act_window">
+        <field name="name">Settings</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+        <field name="context">{'module': 'employee_evaluation_v19c'}</field>
+    </record>
+
+</odoo>

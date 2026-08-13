@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Notification: Evaluation submitted by Manager to MD -->
+        <record id="email_template_evaluation_to_md" model="mail.template">
+            <field name="name">Evaluation Submitted to MD</field>
+            <field name="model_id" ref="model_employee_evaluation"/>
+            <field name="email_from">${(user.email or 'admin@example.com')}</field>
+            <field name="subject">Employee Evaluation Pending MD Review - ${object.employee_id.name}</field>
+            <field name="body_html"><![CDATA[
+                <p>Dear Managing Director,</p>
+                <p>An employee evaluation for <b>${object.employee_id.name}</b> has been submitted by the Direct Manager and requires your review.</p>
+                <p><b>Evaluation Type:</b> ${object.evaluation_type}</p>
+                <p><b>Period:</b> ${object.start_date} → ${object.end_date}</p>
+                <p>Please log in to the system to review and approve.</p>
+                <p>Best regards,<br/>System Notification</p>
+            ]]></field>
+        </record>
+
+        <!-- Notification: Evaluation approved by MD, sent to OD -->
+        <record id="email_template_evaluation_to_od" model="mail.template">
+            <field name="name">Evaluation Approved by MD - Pending OD Review</field>
+            <field name="model_id" ref="model_employee_evaluation"/>
+            <field name="email_from">${(user.email or 'admin@example.com')}</field>
+            <field name="subject">Employee Evaluation Pending OD Review - ${object.employee_id.name}</field>
+            <field name="body_html"><![CDATA[
+                <p>Dear Operations Director,</p>
+                <p>The evaluation for <b>${object.employee_id.name}</b> has been approved by the Managing Director and requires your review.</p>
+                <p><b>Evaluation Type:</b> ${object.evaluation_type}</p>
+                <p><b>Period:</b> ${object.start_date} → ${object.end_date}</p>
+                <p>Please log in to the system to review and approve.</p>
+                <p>Best regards,<br/>System Notification</p>
+            ]]></field>
+        </record>
+
+        <!-- Notification: Sent to Employee for review -->
+        <record id="email_template_evaluation_to_employee" model="mail.template">
+            <field name="name">Evaluation Ready for Employee Review</field>
+            <field name="model_id" ref="model_employee_evaluation"/>
+            <field name="email_from">${(user.email or 'admin@example.com')}</field>
+            <field name="subject">Your Evaluation is Ready for Review - ${object.employee_id.name}</field>
+            <field name="email_to">${object.employee_id.work_email}</field>
+            <field name="body_html"><![CDATA[
+                <p>Dear ${object.employee_id.name},</p>
+                <p>Your performance evaluation for the period <b>${object.start_date}</b> to <b>${object.end_date}</b> has been reviewed by all directors and is now ready for your review.</p>
+                <p>Please log in to the system, review the evaluation, and submit your remarks.</p>
+                <p>Best regards,<br/>HR Department</p>
+            ]]></field>
+        </record>
+
+        <!-- Notification: Evaluation finalized by HR -->
+        <record id="email_template_evaluation_done" model="mail.template">
+            <field name="name">Evaluation Finalized</field>
+            <field name="model_id" ref="model_employee_evaluation"/>
+            <field name="email_from">${(user.email or 'admin@example.com')}</field>
+            <field name="subject">Evaluation Completed - ${object.employee_id.name}</field>
+            <field name="email_to">${object.employee_id.work_email}</field>
+            <field name="body_html"><![CDATA[
+                <p>Dear ${object.employee_id.name},</p>
+                <p>Your evaluation for the period <b>${object.start_date}</b> to <b>${object.end_date}</b> has been approved and finalized.</p>
+                <p><b>Total Score:</b> ${object.total_score}</p>
+                <p><b>Manager's Feedback:</b> ${object.manager_comment or 'N/A'}</p>
+                <p>Please log in to the system to view the full details.</p>
+                <p>Best regards,<br/>HR Department</p>
+            ]]></field>
+        </record>
+
+    </data>
+</odoo>

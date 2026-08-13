@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ==================== REPORT ACTION ==================== -->
+    <record id="action_report_employee_evaluation" model="ir.actions.report">
+        <field name="name">Employee Evaluation Report</field>
+        <field name="model">employee.evaluation</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">employee_evaluation_v19c.report_employee_evaluation_document</field>
+        <field name="report_file">employee_evaluation_v19c.report_employee_evaluation_document</field>
+        <field name="print_report_name">'Evaluation - %s - %s' % (object.employee_id.name, object.evaluation_type)</field>
+        <field name="binding_model_id" ref="model_employee_evaluation"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- ==================== COMMON HEADER TEMPLATE ==================== -->
+    <template id="report_evaluation_info_header">
+        <div class="row mt32 mb16">
+            <div class="col-6">
+                <strong>Employee:</strong> <span t-field="o.employee_id"/>
+            </div>
+            <div class="col-6">
+                <strong>Department:</strong> <span t-field="o.department_id"/>
+            </div>
+        </div>
+        <div class="row mb16">
+            <div class="col-6">
+                <strong>Job Title:</strong> <span t-field="o.job_id"/>
+            </div>
+            <div class="col-6">
+                <strong>Direct Manager:</strong> <span t-field="o.manager_id"/>
+            </div>
+        </div>
+        <div class="row mb16">
+            <div class="col-6">
+                <strong>Evaluation Type:</strong> <span t-field="o.evaluation_type"/>
+            </div>
+            <div class="col-6">
+                <strong>Period:</strong>
+                <span t-esc="o.get_ethiopian_date_str(o.start_date)"/> -
+                <span t-esc="o.get_ethiopian_date_str(o.end_date)"/>
+            </div>
+        </div>
+    </template>
+
+    <!-- ==================== COMMON FOOTER TEMPLATE ==================== -->
+    <template id="report_evaluation_footer">
+        <div class="row mt32">
+            <div class="col-12">
+                <strong>Total Score:</strong> <span t-field="o.total_score"/>
+            </div>
+        </div>
+        <div class="row mt16">
+            <div class="col-12">
+                <strong>Direct Manager's Feedback:</strong>
+                <span t-field="o.manager_comment"/>
+            </div>
+        </div>
+        <div class="row mt16">
+            <div class="col-12">
+                <strong>Managing Director's Comment:</strong>
+                <span t-field="o.md_comment"/>
+            </div>
+        </div>
+        <div class="row mt16">
+            <div class="col-12">
+                <strong>Operations Director's Comment:</strong>
+                <span t-field="o.od_comment"/>
+            </div>
+        </div>
+        <div class="row mt16">
+            <div class="col-12">
+                <strong>Employee's Remarks:</strong>
+                <span t-field="o.employee_comment"/>
+            </div>
+        </div>
+
+        <!-- Signature Lines -->
+        <div class="row mt64">
+            <div class="col-3">
+                <div class="mt16"><strong>Direct Manager:</strong></div>
+                <div class="mt16">_________________________</div>
+                <div class="mt8"><strong>Name: </strong><span t-field="o.manager_id"/></div>
+                <div class="mt8"><strong>Date: </strong>_______________</div>
+            </div>
+            <div class="col-3">
+                <div class="mt16"><strong>Managing Director:</strong></div>
+                <div class="mt16">_________________________</div>
+                <div class="mt8"><strong>Name: </strong>_______________</div>
+                <div class="mt8"><strong>Date: </strong>_______________</div>
+            </div>
+            <div class="col-3">
+                <div class="mt16"><strong>Operations Director:</strong></div>
+                <div class="mt16">_________________________</div>
+                <div class="mt8"><strong>Name: </strong>_______________</div>
+                <div class="mt8"><strong>Date: </strong>_______________</div>
+            </div>
+            <div class="col-3">
+                <div class="mt16"><strong>Employee:</strong></div>
+                <div class="mt16">_________________________</div>
+                <div class="mt8"><strong>Name: </strong><span t-field="o.employee_id"/></div>
+                <div class="mt8"><strong>Date: </strong>_______________</div>
+            </div>
+        </div>
+    </template>
+
+    <!-- ==================== MAIN REPORT TEMPLATE ==================== -->
+    <template id="report_employee_evaluation_document">
+        <t t-call="web.html_container">
+
+            <!-- Questions dictionaries -->
+            <t t-set="criteria_standard" t-value="{
+                1: '1. QUALITY OF WORK&lt;br/&gt;&lt;span style=\'color:#888;\'&gt;The extent to which the employee accomplishes assigned work of a specified quality within a specified time period.&lt;/span&gt;',
+                2: '2. KNOWLEDGE OF JOB&lt;br/&gt;&lt;span style=\'color:#888;\'&gt;The extent to which the employee knows and demonstrates why the work is done.&lt;/span&gt;',
+                3: '3. RELATIONS WITH SUPERVISOR&lt;br/&gt;&lt;span style=\'color:#888;\'&gt;The manner in which the employee responds to supervisory directions and comments.&lt;/span&gt;',
+                4: '4. COOPERATION WITH COLLEAGUES ‐ INTERPERSONAL SKILLS&lt;br/&gt;&lt;span style=\'color:#888;\'&gt;The extent to which the employee gets along with other individuals. Consider the employee\'s tact, courtesy, and effectiveness in dealing with co‐workers, supervisors, and customers.&lt;/span&gt;',
+                5: '5. COMMUNICATIONS&lt;br/&gt;&lt;span style=\'color:#888;\'&gt;The extent to which the employee understands verbal and written communication.&lt;/span&gt;',
+                6: '6. ATTENDANCE AND RELIABILITY&lt;br/&gt;&lt;span style=\'color:#888;\'&gt;The extent to which employee arrives on time and demonstrates consistent attendance; the extent to which the employee contacts supervisor on a timely basis when employee will be late or absent.&lt;/span&gt;',
+                7: '7. INITIATIVE AND CREATIVITY&lt;br/&gt;&lt;span style=\'color:#888;\'&gt;The extent to which the employee is self-directed, resourceful and creative in meeting job objectives; consider how well the employee follows through on assignments and modifies or develops new ideas, methods, or procedures to effectively meet changing circumstances.&lt;/span&gt;',
+                8: '8. CAPACITY TO DEVELOP&lt;br/&gt;&lt;span style=\'color:#888;\'&gt;The extent to which the employee demonstrates the ability and willingness to accept new/more complex duties/responsibilities.&lt;/span&gt;'
+            }"/>
+
+            <t t-set="criteria_legacy" t-value="{
+                1: '1. Skill and proficiency in carrying out assignments in real time manner&lt;br/&gt; የተሰጡትን ስራዎች በተሰጠው ግዜ ለማከናወን ችሎታ እና ብቃት አለው',
+                2: '2. Possesses skills and knowledge to perform the job competently&lt;br/&gt;ስራውን በብቃት ለማከናወን ችሎታ እና እውቀት አለው።',
+                3: '3. Skill at planning, organizing and prioritizing workloads&lt;br/&gt;የሥራ ጫናን በማቀድ, በማደራጀት እና ቅድሚያ የመስጠት ችሎታ አለው',
+                4: '4. Holds self accountable for assigned responsibilities; sees tasks through to completion in a timely manner&lt;br/&gt;ለተሰጡት ኃላፊነቶች እራስን ተጠያቂ ያደርጋል; ሥራዎችን በጊዜው እስከ ማጠናቀቅያ ድረስ ይመለከታል',
+                5: '5. Proficiency at improving work methods and procedures as a means toward greater efficiency&lt;br/&gt;ለበለጠ ውጤታማነት የስራ ዘዴዎችን እና ሂደቶችን የማሻሻ ብቃት አለው',
+                6: '6. Communicates effectively with supervisor, peers, and customers&lt;br/&gt;ከሱፐርቫይዘሮች፣ እኩዮች እና ደንበኞች ጋር በብቃት ይግባባል',
+                7: '7. Ability to work independently&lt;br/&gt;እራሱን ችሎ የመስራት ብቃት አለው',
+                8: '8. Ability to work cooperatively with supervision or as part of a team&lt;br/&gt;ከክትትል ወይም ከቡድን አካል ጋር በትብብር የመስራት ችሎታ አለው',
+                9: '9. Willingness to take on additional responsibilities&lt;br/&gt;ተጨማሪ ኃላፊነቶችን ለመውሰድ ፈቃደኛነት አለው',
+                10: '10. Reliability (attendance, punctuality, meeting deadlines)&lt;br/&gt;አስተማማኝነት (በመገኘት፣ የስራ ሰዓቱን በማክበር፣ የስብሰባ ቀነ-ገደቦች በመጠበቅ)',
+                11: '1. Skill and proficiency in carrying out assignments in real time manner&lt;br/&gt; የተሰጡትን ስራዎች በተሰጠው ግዜ ለማከናወን ችሎታ እና ብቃት አለው',
+                12: '2. Possesses skills and knowledge to perform the job competently&lt;br/&gt;ስራውን በብቃት ለማከናወን ችሎታ እና እውቀት አለው።',
+                13: '3. Skill at planning, organizing and prioritizing workloads&lt;br/&gt;የሥራ ጫናን በማቀድ, በማደራጀት እና ቅድሚያ የመስጠት ችሎታ አለው',
+                14: '4. Holds self accountable for assigned responsibilities; sees tasks through to completion in a timely manner&lt;br/&gt;ለተሰጡት ኃላፊነቶች እራስን ተጠያቂ ያደርጋል; ሥራዎችን በጊዜው እስከ ማጠናቀቅያ ድረስ ይመለከታል',
+                15: '5. Proficiency at improving work methods and procedures as a means toward greater efficiency&lt;br/&gt;ለበለጠ ውጤታማነት የስራ ዘዴዎችን እና ሂደቶችን የማሻሻ ብቃት አለው',
+                16: '6. Communicates effectively with supervisor, peers, and customers&lt;br/&gt;ከሱፐርቫይዘሮች፣ እኩዮች እና ደንበኞች ጋር በብቃት ይግባባል',
+                17: '7. Ability to work independently&lt;br/&gt;እራሱን ችሎ የመስራት ብቃት አለው',
+                18: '8. Ability to work cooperatively with supervision or as part of a team&lt;br/&gt;ከክትትል ወይም ከቡድን አካል ጋር በትብብር የመስራት ችሎታ አለው',
+                19: '9. Willingness to take on additional responsibilities&lt;br/&gt;ተጨማሪ ኃላፊነቶችን ለመውሰድ ፈቃደኛነት አለው',
+                20: '10. Reliability (attendance, punctuality, meeting deadlines)&lt;br/&gt;አስተማማኝነት (በመገኘት፣ የስራ ሰዓቱን በማክበር፣ የስብሰባ ቀነ-ገደቦች በመጠበቅ)',
+                21: '11. Adeptness at analyzing facts, problem solving, decision-making, and demonstrating good judgment&lt;br/&gt;እውነታዎችን በመተንተን፣ ችግር በመፍታት፣ ውሳኔ በመስጠት እና ጥሩ የማመዛዘን ችሎታን በማሳየት',
+                22: '12. Displays fairness towards all subordinates&lt;br/&gt;ለሁሉም የበታች ሰራተኞች ፍትሃዊነትን ያሳያል።',
+                23: '13. Identifies performance expectations, gives timely feedback and conducts formal evaluations&lt;br/&gt;የለአፈፃፀም የሚጠበቁትን ቁልፍ ነገሮች ይለያል, ወቅታዊ አስተያየት ይሰጣል እና የክፍሉን መደበኛ የስራ አፈጻጸም ግምገማዎችን በየግዜው ያካሂዳል.',
+                24: '14. Helps employees to see the potential for developing their skills; assists them in eliminating barriers to their development&lt;br/&gt; ሰራተኞቹ ክህሎቶቻቸውን በማዳበር አቅማቸውን እንዲገነዘቡ ይረዳል; በእድገታቸው ላይ እንቅፋቶችን ለማስወገድ ይረዳቸዋል',
+                25: '15. Delegates responsibility where appropriate, based on the employee’s ability and potential&lt;br/&gt;በተቀጣሪው አቅም እና ችሎታ ላይ በመመስረት ሃላፊነትን በተገቢው ቦታ ያስተላልፋል.'
+            }"/>
+
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <!-- Title based on type -->
+                        <h2 t-if="o.evaluation_type == 'two_months'">2 Months Employee Evaluation</h2>
+                        <h2 t-if="o.evaluation_type == 'six_months'">6 Months Employee Evaluation</h2>
+
+                        <t t-call="employee_evaluation_v19c.report_evaluation_info_header"/>
+
+                        <h3>Evaluation Criteria</h3>
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Evaluation Criteria</th>
+                                    <th>Score</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-if="o.evaluation_type == 'two_months'">
+                                    <t t-foreach="range(1, 9)" t-as="i">
+                                        <tr>
+                                            <td><t t-raw="criteria_standard[i]"/></td>
+                                            <td><span t-esc="o['q' + str(i)]"/></td>
+                                        </tr>
+                                    </t>
+                                </t>
+                                <t t-if="o.evaluation_type == 'six_months' and o.eval_employee_type == 'standard'">
+                                    <t t-foreach="range(1, 11)" t-as="i">
+                                        <tr>
+                                            <td><t t-raw="criteria_legacy[i]"/></td>
+                                            <td><span t-esc="o['q' + str(i)]"/></td>
+                                        </tr>
+                                    </t>
+                                </t>
+                                <t t-if="o.evaluation_type == 'six_months' and o.eval_employee_type == 'supervisor'">
+                                    <t t-foreach="range(11, 26)" t-as="i">
+                                        <tr>
+                                            <td><t t-raw="criteria_legacy[i]"/></td>
+                                            <td><span t-esc="o['q' + str(i)]"/></td>
+                                        </tr>
+                                    </t>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <t t-call="employee_evaluation_v19c.report_evaluation_footer"/>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

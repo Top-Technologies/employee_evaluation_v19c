@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_evaluation_employee,employee.evaluation employee,model_employee_evaluation,group_evaluation_employee,1,1,1,0
+access_evaluation_manager,employee.evaluation manager,model_employee_evaluation,group_evaluation_manager,1,1,1,0
+access_evaluation_md,employee.evaluation md,model_employee_evaluation,group_evaluation_md,1,1,1,0
+access_evaluation_od,employee.evaluation od,model_employee_evaluation,group_evaluation_od,1,1,1,0
+access_evaluation_hr,employee.evaluation hr,model_employee_evaluation,group_evaluation_hr,1,1,1,1
