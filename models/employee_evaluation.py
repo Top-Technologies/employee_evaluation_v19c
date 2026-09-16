@@ -127,8 +127,8 @@ class EmployeeEvaluation(models.Model):
         [
             ('draft', 'Draft'),
             ('manager_approved', 'Manager Approved'),
-            ('md_approved', 'MD Approved'),
             ('od_approved', 'OD Approved'),
+            ('md_approved', 'MD Approved'),
             ('employee_reviewed', 'Employee Reviewed'),
             ('done', 'Done'),
         ],
@@ -279,7 +279,7 @@ class EmployeeEvaluation(models.Model):
     # ==================== WORKFLOW ACTIONS ====================
 
     def action_manager_approve(self):
-        """Step 1: Direct Manager submits the evaluation to MD."""
+        """Step 1: Direct Manager submits the evaluation to OD."""
         self.ensure_one()
         if self.state != 'draft':
             raise ValidationError("This action is only allowed from Draft state.")
@@ -292,38 +292,6 @@ class EmployeeEvaluation(models.Model):
 
         try:
             partners = []
-            if self.md_user_id and self.md_user_id.partner_id:
-                partners.append(self.md_user_id.partner_id.id)
-            else:
-                md_group = self.env.ref('employee_evaluation_v19c.group_evaluation_md')
-                partners = md_group.users.mapped('partner_id').ids
-
-            self.message_post(
-                body=f"Evaluation for {self.employee_id.name} submitted by "
-                     f"{self.env.user.name}. Waiting for Managing Director review.",
-                partner_ids=partners,
-                subtype_xmlid='mail.mt_comment'
-            )
-        except Exception as e:
-            _logger.warning("Failed to send notification to MD: %s", str(e))
-        return True
-
-    def action_md_approve(self):
-        """Step 2: Managing Director approves and forwards to OD."""
-        self.ensure_one()
-        if self.state != 'manager_approved':
-            raise ValidationError("This action is only allowed from Manager Approved state.")
-
-        if not self.is_md:
-            raise AccessError(
-                f"Only the designated Managing Director ({self.md_user_id.name if self.md_user_id else 'configured in Settings'}) "
-                "or HR Manager can approve at this stage."
-            )
-
-        self.state = 'md_approved'
-
-        try:
-            partners = []
             if self.od_user_id and self.od_user_id.partner_id:
                 partners.append(self.od_user_id.partner_id.id)
             else:
@@ -331,7 +299,7 @@ class EmployeeEvaluation(models.Model):
                 partners = od_group.users.mapped('partner_id').ids
 
             self.message_post(
-                body=f"Evaluation for {self.employee_id.name} approved by Managing Director "
+                body=f"Evaluation for {self.employee_id.name} submitted by "
                      f"{self.env.user.name}. Waiting for Operations Director review.",
                 partner_ids=partners,
                 subtype_xmlid='mail.mt_comment'
@@ -341,10 +309,10 @@ class EmployeeEvaluation(models.Model):
         return True
 
     def action_od_approve(self):
-        """Step 3: Operations Director approves and forwards to Employee for review."""
+        """Step 2: Operations Director approves and forwards to MD."""
         self.ensure_one()
-        if self.state != 'md_approved':
-            raise ValidationError("This action is only allowed from MD Approved state.")
+        if self.state != 'manager_approved':
+            raise ValidationError("This action is only allowed from Manager Approved state.")
 
         if not self.is_od:
             raise AccessError(
@@ -353,6 +321,38 @@ class EmployeeEvaluation(models.Model):
             )
 
         self.state = 'od_approved'
+
+        try:
+            partners = []
+            if self.md_user_id and self.md_user_id.partner_id:
+                partners.append(self.md_user_id.partner_id.id)
+            else:
+                md_group = self.env.ref('employee_evaluation_v19c.group_evaluation_md')
+                partners = md_group.users.mapped('partner_id').ids
+
+            self.message_post(
+                body=f"Evaluation for {self.employee_id.name} approved by Operations Director "
+                     f"{self.env.user.name}. Waiting for Managing Director review.",
+                partner_ids=partners,
+                subtype_xmlid='mail.mt_comment'
+            )
+        except Exception as e:
+            _logger.warning("Failed to send notification to MD: %s", str(e))
+        return True
+
+    def action_md_approve(self):
+        """Step 3: Managing Director approves and forwards to Employee for review."""
+        self.ensure_one()
+        if self.state != 'od_approved':
+            raise ValidationError("This action is only allowed from OD Approved state.")
+
+        if not self.is_md:
+            raise AccessError(
+                f"Only the designated Managing Director ({self.md_user_id.name if self.md_user_id else 'configured in Settings'}) "
+                "or HR Manager can approve at this stage."
+            )
+
+        self.state = 'md_approved'
 
         try:
             partners = []
@@ -371,8 +371,8 @@ class EmployeeEvaluation(models.Model):
     def action_employee_review(self):
         """Step 4: Employee submits their remarks."""
         self.ensure_one()
-        if self.state != 'od_approved':
-            raise ValidationError("This action is only allowed from OD Approved state.")
+        if self.state != 'md_approved':
+            raise ValidationError("This action is only allowed from MD Approved state.")
 
         current_user = self.env.user
         is_hr = current_user.has_group('employee_evaluation_v19c.group_evaluation_hr')
@@ -400,8 +400,8 @@ class EmployeeEvaluation(models.Model):
     def action_hr_approve(self):
         """Step 5: HR Manager gives final approval."""
         self.ensure_one()
-        if self.state not in ('draft', 'manager_approved', 'md_approved',
-                              'od_approved', 'employee_reviewed'):
+        if self.state not in ('draft', 'manager_approved', 'od_approved',
+                              'md_approved', 'employee_reviewed'):
             raise ValidationError("Cannot approve from the current state.")
 
         if not self.env.user.has_group('employee_evaluation_v19c.group_evaluation_hr'):

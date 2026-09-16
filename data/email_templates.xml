@@ -2,14 +2,14 @@
 <odoo>
     <data noupdate="1">
 
-        <!-- Notification: Evaluation submitted by Manager to MD -->
-        <record id="email_template_evaluation_to_md" model="mail.template">
-            <field name="name">Evaluation Submitted to MD</field>
+        <!-- Notification: Evaluation submitted by Manager to OD -->
+        <record id="email_template_evaluation_to_od" model="mail.template">
+            <field name="name">Evaluation Submitted to OD</field>
             <field name="model_id" ref="model_employee_evaluation"/>
             <field name="email_from">${(user.email or 'admin@example.com')}</field>
-            <field name="subject">Employee Evaluation Pending MD Review - ${object.employee_id.name}</field>
+            <field name="subject">Employee Evaluation Pending OD Review - ${object.employee_id.name}</field>
             <field name="body_html"><![CDATA[
-                <p>Dear Managing Director,</p>
+                <p>Dear Operations Director,</p>
                 <p>An employee evaluation for <b>${object.employee_id.name}</b> has been submitted by the Direct Manager and requires your review.</p>
                 <p><b>Evaluation Type:</b> ${object.evaluation_type}</p>
                 <p><b>Period:</b> ${object.start_date} → ${object.end_date}</p>
@@ -18,15 +18,15 @@
             ]]></field>
         </record>
 
-        <!-- Notification: Evaluation approved by MD, sent to OD -->
-        <record id="email_template_evaluation_to_od" model="mail.template">
-            <field name="name">Evaluation Approved by MD - Pending OD Review</field>
+        <!-- Notification: Evaluation approved by OD, sent to MD -->
+        <record id="email_template_evaluation_to_md" model="mail.template">
+            <field name="name">Evaluation Approved by OD - Pending MD Review</field>
             <field name="model_id" ref="model_employee_evaluation"/>
             <field name="email_from">${(user.email or 'admin@example.com')}</field>
-            <field name="subject">Employee Evaluation Pending OD Review - ${object.employee_id.name}</field>
+            <field name="subject">Employee Evaluation Pending MD Review - ${object.employee_id.name}</field>
             <field name="body_html"><![CDATA[
-                <p>Dear Operations Director,</p>
-                <p>The evaluation for <b>${object.employee_id.name}</b> has been approved by the Managing Director and requires your review.</p>
+                <p>Dear Managing Director,</p>
+                <p>The evaluation for <b>${object.employee_id.name}</b> has been approved by the Operations Director and requires your review.</p>
                 <p><b>Evaluation Type:</b> ${object.evaluation_type}</p>
                 <p><b>Period:</b> ${object.start_date} → ${object.end_date}</p>
                 <p>Please log in to the system to review and approve.</p>

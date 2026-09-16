@@ -8,7 +8,7 @@
         <field name="arch" type="xml">
             <list string="Employee Evaluations"
                   decoration-info="state == 'draft'"
-                  decoration-warning="state in ('manager_approved','md_approved','od_approved')"
+                  decoration-warning="state in ('manager_approved','od_approved','md_approved')"
                   decoration-primary="state == 'employee_reviewed'"
                   decoration-success="state == 'done'">
                 <field name="employee_id"/>
@@ -35,7 +35,7 @@
                 <separator/>
                 <filter string="Draft" name="filter_draft" domain="[('state', '=', 'draft')]"/>
                 <filter string="In Progress" name="filter_in_progress"
-                        domain="[('state', 'in', ('manager_approved','md_approved','od_approved','employee_reviewed'))]"/>
+                        domain="[('state', 'in', ('manager_approved','od_approved','md_approved','employee_reviewed'))]"/>
                 <filter string="Done" name="filter_done" domain="[('state', '=', 'done')]"/>
                 <separator/>
                 <filter string="2 Months" name="filter_two_months" domain="[('evaluation_type', '=', 'two_months')]"/>
@@ -62,27 +62,27 @@
                 <header>
                     <!-- Step 1: Direct Manager submits -->
                     <button name="action_manager_approve"
-                            string="Submit to Managing Director"
+                            string="Submit to Operations Director"
                             type="object" class="oe_highlight"
                             invisible="state != 'draft' or not is_manager"/>
 
-                    <!-- Step 2: MD approves -->
-                    <button name="action_md_approve"
-                            string="Approve as Managing Director"
-                            type="object" class="oe_highlight"
-                            invisible="state != 'manager_approved' or not is_md"/>
-
-                    <!-- Step 3: OD approves -->
+                    <!-- Step 2: OD approves -->
                     <button name="action_od_approve"
                             string="Approve as Operations Director"
                             type="object" class="oe_highlight"
-                            invisible="state != 'md_approved' or not is_od"/>
+                            invisible="state != 'manager_approved' or not is_od"/>
+
+                    <!-- Step 3: MD approves -->
+                    <button name="action_md_approve"
+                            string="Approve as Managing Director"
+                            type="object" class="oe_highlight"
+                            invisible="state != 'od_approved' or not is_md"/>
 
                     <!-- Step 4: Employee submits review -->
                     <button name="action_employee_review"
                             string="Submit My Review"
                             type="object" class="btn-primary"
-                            invisible="state != 'od_approved' or not is_self"
+                            invisible="state != 'md_approved' or not is_self"
                             groups="employee_evaluation_v19c.group_evaluation_employee"/>
 
                     <!-- Step 5: HR final approval -->
@@ -108,7 +108,7 @@
                             groups="employee_evaluation_v19c.group_evaluation_hr"/>
 
                     <field name="state" widget="statusbar"
-                           statusbar_visible="draft,manager_approved,md_approved,od_approved,employee_reviewed,done"/>
+                           statusbar_visible="draft,manager_approved,od_approved,md_approved,employee_reviewed,done"/>
                 </header>
                 <sheet>
                     <field name="is_self" invisible="1"/>
@@ -407,17 +407,17 @@
                             <field name="manager_comment"
                                    placeholder="Direct Manager's feedback..."
                                    readonly="state != 'draft' or not is_manager"/>
-                            <field name="md_comment"
-                                   placeholder="Managing Director's comment..."
-                                   readonly="state != 'manager_approved' or not is_md"/>
-                        </group>
-                        <group>
                             <field name="od_comment"
                                    placeholder="Operations Director's comment..."
-                                   readonly="state != 'md_approved' or not is_od"/>
+                                   readonly="state != 'manager_approved' or not is_od"/>
+                        </group>
+                        <group>
+                            <field name="md_comment"
+                                   placeholder="Managing Director's comment..."
+                                   readonly="state != 'od_approved' or not is_md"/>
                             <field name="employee_comment"
                                    placeholder="Employee's remarks..."
-                                   readonly="state != 'od_approved' or not is_self"/>
+                                   readonly="state != 'md_approved' or not is_self"/>
                         </group>
                     </group>
                     <group>

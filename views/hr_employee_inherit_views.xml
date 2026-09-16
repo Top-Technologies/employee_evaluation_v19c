@@ -49,7 +49,7 @@
                         <list string="Employee Evaluations"
                               create="1" edit="1"
                               decoration-info="state == 'draft'"
-                              decoration-warning="state in ('manager_approved','md_approved','od_approved')"
+                              decoration-warning="state in ('manager_approved','od_approved','md_approved')"
                               decoration-primary="state == 'employee_reviewed'"
                               decoration-success="state == 'done'">
                             <field name="evaluation_type"/>

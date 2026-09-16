@@ -57,14 +57,14 @@
         </div>
         <div class="row mt16">
             <div class="col-12">
-                <strong>Managing Director's Comment:</strong>
-                <span t-field="o.md_comment"/>
+                <strong>Operations Director's Comment:</strong>
+                <span t-field="o.od_comment"/>
             </div>
         </div>
         <div class="row mt16">
             <div class="col-12">
-                <strong>Operations Director's Comment:</strong>
-                <span t-field="o.od_comment"/>
+                <strong>Managing Director's Comment:</strong>
+                <span t-field="o.md_comment"/>
             </div>
         </div>
         <div class="row mt16">
@@ -83,13 +83,13 @@
                 <div class="mt8"><strong>Date: </strong>_______________</div>
             </div>
             <div class="col-3">
-                <div class="mt16"><strong>Managing Director:</strong></div>
+                <div class="mt16"><strong>Operations Director:</strong></div>
                 <div class="mt16">_________________________</div>
                 <div class="mt8"><strong>Name: </strong>_______________</div>
                 <div class="mt8"><strong>Date: </strong>_______________</div>
             </div>
             <div class="col-3">
-                <div class="mt16"><strong>Operations Director:</strong></div>
+                <div class="mt16"><strong>Managing Director:</strong></div>
                 <div class="mt16">_________________________</div>
                 <div class="mt8"><strong>Name: </strong>_______________</div>
                 <div class="mt8"><strong>Date: </strong>_______________</div>
