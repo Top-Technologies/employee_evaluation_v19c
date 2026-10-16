@@ -17,6 +17,7 @@
                 <field name="evaluation_type"/>
                 <field name="start_date"/>
                 <field name="end_date"/>
+                <field name="evaluation_date" optional="show"/>
                 <field name="total_score"/>
                 <field name="state" widget="badge"/>
             </list>
@@ -32,6 +33,7 @@
                 <field name="employee_id"/>
                 <field name="department_id"/>
                 <field name="evaluation_type"/>
+                <field name="evaluation_date"/>
                 <separator/>
                 <filter string="Draft" name="filter_draft" domain="[('state', '=', 'draft')]"/>
                 <filter string="In Progress" name="filter_in_progress"
@@ -47,6 +49,7 @@
                     <filter string="Employee" name="group_employee" context="{'group_by': 'employee_id'}"/>
                     <filter string="Department" name="group_department" context="{'group_by': 'department_id'}"/>
                     <filter string="Type" name="group_type" context="{'group_by': 'evaluation_type'}"/>
+                    <filter string="Evaluation Date" name="group_evaluation_date" context="{'group_by': 'evaluation_date'}"/>
                     <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
                 </group>
             </search>
@@ -132,7 +135,7 @@
                             <field name="manager_id" readonly="1"/>
                             <field name="md_user_id" readonly="1"/>
                             <field name="od_user_id" readonly="1"/>
-                            <field name="evaluation_date" readonly="1"/>
+                            <field name="evaluation_date" readonly="state != 'draft'"/>
                             <field name="branch" readonly="1" widget="many2many_tags"/>
                         </group>
                     </group>

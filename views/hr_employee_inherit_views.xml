@@ -55,6 +55,7 @@
                             <field name="evaluation_type"/>
                             <field name="start_date"/>
                             <field name="end_date"/>
+                            <field name="evaluation_date" optional="show"/>
                             <field name="total_score"/>
                             <field name="state" widget="badge"/>
                         </list>

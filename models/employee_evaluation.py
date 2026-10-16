@@ -107,7 +107,11 @@ class EmployeeEvaluation(models.Model):
     # ==================== DATE FIELDS ====================
     start_date = fields.Date(string="Period Start", default=fields.Date.today)
     end_date = fields.Date(string="Period End", default=fields.Date.today)
-    evaluation_date = fields.Date(string='Evaluation Date', readonly=True)
+    evaluation_date = fields.Date(
+        string='Evaluation Date',
+        default=fields.Date.today,
+        tracking=True,
+    )
 
     # ==================== EMPLOYEE TYPE ====================
     eval_employee_type = fields.Selection(
@@ -408,7 +412,8 @@ class EmployeeEvaluation(models.Model):
             raise AccessError("Only HR Managers can give final approval.")
 
         self.state = 'done'
-        self.evaluation_date = fields.Date.today()
+        if not self.evaluation_date:
+            self.evaluation_date = fields.Date.today()
 
         try:
             partners = []
