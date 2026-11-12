@@ -17,26 +17,26 @@
                         groups="employee_evaluation_v19c.group_evaluation_manager"/>
             </xpath>
 
-            <!-- Add Smart Button -->
+            <!-- Add Smart Button: Visible only to Evaluation Managers and HR -->
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="action_open_evaluations"
                         type="object"
                         class="oe_stat_button"
                         icon="fa-star"
-                        groups="employee_evaluation_v19c.group_evaluation_employee">
+                        groups="employee_evaluation_v19c.group_evaluation_manager,employee_evaluation_v19c.group_evaluation_hr,hr.group_hr_manager">
                     <field name="evaluation_count" widget="statinfo" string="Evaluations"/>
                 </button>
             </xpath>
 
             <!-- Add Employee Type field after parent_id -->
             <xpath expr="//field[@name='parent_id']" position="after">
-                <field name="emp_eval_type"/>
+                <field name="emp_eval_type" groups="employee_evaluation_v19c.group_evaluation_manager,employee_evaluation_v19c.group_evaluation_hr,hr.group_hr_manager"/>
             </xpath>
 
-            <!-- Add Evaluations Tab in the notebook -->
+            <!-- Add Evaluations Tab in the notebook: Hidden from User access -->
             <xpath expr="//notebook" position="inside">
                 <page string="Evaluations" name="evaluations"
-                      groups="employee_evaluation_v19c.group_evaluation_employee">
+                      groups="employee_evaluation_v19c.group_evaluation_manager,employee_evaluation_v19c.group_evaluation_hr,hr.group_hr_manager">
                     <div class="mb-3">
                         <button name="action_create_evaluation"
                                 string="+ Create Evaluation for this Employee"

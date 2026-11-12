@@ -41,40 +41,69 @@
 
     <!-- ==================== MENUS ==================== -->
 
-    <!-- Parent Menu under Employees -->
-    <menuitem id="menu_employee_evaluation_root"
-              name="Employee Evaluation"
-              parent="hr.menu_hr_root"
-              sequence="20"
-              groups="employee_evaluation_v19c.group_evaluation_employee"/>
+    <!-- Parent Menu under Employees: Strictly restricted to Manager and HR -->
+    <record id="menu_employee_evaluation_root" model="ir.ui.menu">
+        <field name="name">Employee Evaluation</field>
+        <field name="parent_id" ref="hr.menu_hr_root"/>
+        <field name="sequence">20</field>
+        <field name="group_ids" eval="[(6, 0, [
+            ref('employee_evaluation_v19c.group_evaluation_manager'),
+            ref('employee_evaluation_v19c.group_evaluation_hr'),
+            ref('hr.group_hr_manager')
+        ])]"/>
+    </record>
 
     <!-- Sub-menus -->
-    <menuitem id="menu_evaluation_all"
-              name="All Evaluations"
-              parent="menu_employee_evaluation_root"
-              action="action_employee_evaluation_all"
-              groups="employee_evaluation_v19c.group_evaluation_employee"
-              sequence="1"/>
+    <record id="menu_evaluation_all" model="ir.ui.menu">
+        <field name="name">All Evaluations</field>
+        <field name="parent_id" ref="menu_employee_evaluation_root"/>
+        <field name="action" ref="action_employee_evaluation_all"/>
+        <field name="sequence">1</field>
+        <field name="group_ids" eval="[(6, 0, [
+            ref('employee_evaluation_v19c.group_evaluation_manager'),
+            ref('employee_evaluation_v19c.group_evaluation_hr'),
+            ref('hr.group_hr_manager')
+        ])]"/>
+    </record>
 
-    <menuitem id="menu_evaluation_two_months"
-              name="2 Months Evaluation"
-              parent="menu_employee_evaluation_root"
-              action="action_evaluation_two_months"
-              groups="employee_evaluation_v19c.group_evaluation_employee"
-              sequence="2"/>
+    <record id="menu_evaluation_two_months" model="ir.ui.menu">
+        <field name="name">2 Months Evaluation</field>
+        <field name="parent_id" ref="menu_employee_evaluation_root"/>
+        <field name="action" ref="action_evaluation_two_months"/>
+        <field name="sequence">2</field>
+        <field name="group_ids" eval="[(6, 0, [
+            ref('employee_evaluation_v19c.group_evaluation_manager'),
+            ref('employee_evaluation_v19c.group_evaluation_hr'),
+            ref('hr.group_hr_manager')
+        ])]"/>
+    </record>
 
-    <menuitem id="menu_evaluation_six_months"
-              name="6 Months Evaluation"
-              parent="menu_employee_evaluation_root"
-              action="action_evaluation_six_months"
-              groups="employee_evaluation_v19c.group_evaluation_employee"
-              sequence="3"/>
+    <record id="menu_evaluation_six_months" model="ir.ui.menu">
+        <field name="name">6 Months Evaluation</field>
+        <field name="parent_id" ref="menu_employee_evaluation_root"/>
+        <field name="action" ref="action_evaluation_six_months"/>
+        <field name="sequence">3</field>
+        <field name="group_ids" eval="[(6, 0, [
+            ref('employee_evaluation_v19c.group_evaluation_manager'),
+            ref('employee_evaluation_v19c.group_evaluation_hr'),
+            ref('hr.group_hr_manager')
+        ])]"/>
+    </record>
 
-    <menuitem id="menu_evaluation_settings"
-              name="Settings"
-              parent="menu_employee_evaluation_root"
-              action="action_evaluation_config_settings"
-              groups="employee_evaluation_v19c.group_evaluation_hr"
-              sequence="100"/>
+    <record id="menu_evaluation_settings" model="ir.ui.menu">
+        <field name="name">Settings</field>
+        <field name="parent_id" ref="menu_employee_evaluation_root"/>
+        <field name="action" ref="action_evaluation_config_settings"/>
+        <field name="sequence">100</field>
+        <field name="group_ids" eval="[(6, 0, [
+            ref('employee_evaluation_v19c.group_evaluation_hr'),
+            ref('hr.group_hr_manager')
+        ])]"/>
+    </record>
+
+    <!-- Restrict Employee Reporting menu to Administrator only so User access only sees employees -->
+    <record id="hr.hr_menu_hr_reports" model="ir.ui.menu">
+        <field name="group_ids" eval="[(6, 0, [ref('hr.group_hr_manager')])]"/>
+    </record>
 
 </odoo>
