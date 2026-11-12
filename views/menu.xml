@@ -41,15 +41,13 @@
 
     <!-- ==================== MENUS ==================== -->
 
-    <!-- Parent Menu under Employees: Strictly restricted to Manager and HR -->
+    <!-- Parent Menu under Employees: Strictly restricted to Evaluation Administrator (requires Role Admin + HR Admin) -->
     <record id="menu_employee_evaluation_root" model="ir.ui.menu">
         <field name="name">Employee Evaluation</field>
         <field name="parent_id" ref="hr.menu_hr_root"/>
         <field name="sequence">20</field>
         <field name="group_ids" eval="[(6, 0, [
-            ref('employee_evaluation_v19c.group_evaluation_manager'),
-            ref('employee_evaluation_v19c.group_evaluation_hr'),
-            ref('hr.group_hr_manager')
+            ref('employee_evaluation_v19c.group_evaluation_hr')
         ])]"/>
     </record>
 
@@ -60,9 +58,7 @@
         <field name="action" ref="action_employee_evaluation_all"/>
         <field name="sequence">1</field>
         <field name="group_ids" eval="[(6, 0, [
-            ref('employee_evaluation_v19c.group_evaluation_manager'),
-            ref('employee_evaluation_v19c.group_evaluation_hr'),
-            ref('hr.group_hr_manager')
+            ref('employee_evaluation_v19c.group_evaluation_hr')
         ])]"/>
     </record>
 
@@ -72,9 +68,7 @@
         <field name="action" ref="action_evaluation_two_months"/>
         <field name="sequence">2</field>
         <field name="group_ids" eval="[(6, 0, [
-            ref('employee_evaluation_v19c.group_evaluation_manager'),
-            ref('employee_evaluation_v19c.group_evaluation_hr'),
-            ref('hr.group_hr_manager')
+            ref('employee_evaluation_v19c.group_evaluation_hr')
         ])]"/>
     </record>
 
@@ -84,9 +78,7 @@
         <field name="action" ref="action_evaluation_six_months"/>
         <field name="sequence">3</field>
         <field name="group_ids" eval="[(6, 0, [
-            ref('employee_evaluation_v19c.group_evaluation_manager'),
-            ref('employee_evaluation_v19c.group_evaluation_hr'),
-            ref('hr.group_hr_manager')
+            ref('employee_evaluation_v19c.group_evaluation_hr')
         ])]"/>
     </record>
 

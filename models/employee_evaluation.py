@@ -198,6 +198,24 @@ class EmployeeEvaluation(models.Model):
             else:
                 rec.name = "New Evaluation"
 
+    # ==================== ACCESS CONTROL ====================
+    def check_access_rights(self, operation, raise_exception=True):
+        res = super().check_access_rights(operation, raise_exception=raise_exception)
+        if not self.env.su:
+            has_both = self.env.user.has_group('base.group_system') and self.env.user.has_group('hr.group_hr_manager')
+            if not has_both:
+                if raise_exception:
+                    raise AccessError("Employee Evaluation is only allowed to users with both Administrator role and Employee Admin access.")
+                return False
+        return res
+
+    def check_access_rule(self, operation):
+        if not self.env.su:
+            has_both = self.env.user.has_group('base.group_system') and self.env.user.has_group('hr.group_hr_manager')
+            if not has_both:
+                raise AccessError("Employee Evaluation is only allowed to users with both Administrator role and Employee Admin access.")
+        return super().check_access_rule(operation)
+
     @api.depends_context('uid')
     @api.depends('employee_id')
     def _compute_is_self(self):

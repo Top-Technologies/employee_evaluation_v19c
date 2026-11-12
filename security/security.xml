@@ -26,16 +26,15 @@
             <field name="implied_ids" eval="[(4, ref('group_evaluation_manager'))]"/>
         </record>
 
-        <!-- HR Manager Group (full access) -->
+        <!-- Evaluation Administrator Group (granted ONLY to users with BOTH Administrator role AND Employee Admin access) -->
         <record id="group_evaluation_hr" model="res.groups">
-            <field name="name">HR Manager</field>
-            <field name="implied_ids" eval="[(4, ref('group_evaluation_md')), (4, ref('group_evaluation_od'))]"/>
+            <field name="name">Evaluation Administrator</field>
             <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
         </record>
 
-        <!-- System Administrators automatically get HR Manager access -->
+        <!-- Do NOT grant evaluation access automatically to System Administrators (must also have hr.group_hr_manager) -->
         <record id="base.group_system" model="res.groups">
-            <field name="implied_ids" eval="[(4, ref('group_evaluation_hr'))]"/>
+            <field name="implied_ids" eval="[(3, ref('group_evaluation_hr'))]"/>
         </record>
 
         <!-- Employee Access Level: Rename to 'User' and unlink HR Manager access -->
@@ -44,48 +43,16 @@
             <field name="implied_ids" eval="[(3, ref('group_evaluation_hr'))]"/>
         </record>
 
-        <!-- HR Managers automatically get HR Manager access -->
+        <!-- Do NOT grant evaluation access automatically to HR Managers alone (must also have base.group_system) -->
         <record id="hr.group_hr_manager" model="res.groups">
-            <field name="implied_ids" eval="[(4, ref('group_evaluation_hr'))]"/>
+            <field name="implied_ids" eval="[(3, ref('group_evaluation_hr'))]"/>
         </record>
 
         <!-- ==================== RECORD RULES ==================== -->
 
-        <!-- Employee: Can see ONLY their own evaluations -->
-        <record id="rule_evaluation_employee" model="ir.rule">
-            <field name="name">Employee: Own Evaluations</field>
-            <field name="model_id" ref="model_employee_evaluation"/>
-            <field name="groups" eval="[(4, ref('group_evaluation_employee'))]"/>
-            <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
-        </record>
-
-        <!-- Direct Manager: Can see evaluations of their subordinates + own created -->
-        <record id="rule_evaluation_manager" model="ir.rule">
-            <field name="name">Manager: Subordinate Evaluations</field>
-            <field name="model_id" ref="model_employee_evaluation"/>
-            <field name="groups" eval="[(4, ref('group_evaluation_manager'))]"/>
-            <field name="domain_force">['|', '|', ('create_uid', '=', user.id), ('employee_id.parent_id.user_id', '=', user.id), ('employee_id.user_id', '=', user.id)]</field>
-        </record>
-
-        <!-- Managing Director: Can see all evaluations -->
-        <record id="rule_evaluation_md" model="ir.rule">
-            <field name="name">MD: All Evaluations</field>
-            <field name="model_id" ref="model_employee_evaluation"/>
-            <field name="groups" eval="[(4, ref('group_evaluation_md'))]"/>
-            <field name="domain_force">[(1, '=', 1)]</field>
-        </record>
-
-        <!-- Operations Director: Can see all evaluations -->
-        <record id="rule_evaluation_od" model="ir.rule">
-            <field name="name">OD: All Evaluations</field>
-            <field name="model_id" ref="model_employee_evaluation"/>
-            <field name="groups" eval="[(4, ref('group_evaluation_od'))]"/>
-            <field name="domain_force">[(1, '=', 1)]</field>
-        </record>
-
-        <!-- HR Manager: Can see all evaluations -->
+        <!-- Evaluation Administrator: Can see all evaluations -->
         <record id="rule_evaluation_hr" model="ir.rule">
-            <field name="name">HR: All Evaluations</field>
+            <field name="name">Evaluation Administrator: All Evaluations</field>
             <field name="model_id" ref="model_employee_evaluation"/>
             <field name="groups" eval="[(4, ref('group_evaluation_hr'))]"/>
             <field name="domain_force">[(1, '=', 1)]</field>

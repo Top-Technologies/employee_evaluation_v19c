@@ -86,7 +86,7 @@
                             string="Submit My Review"
                             type="object" class="btn-primary"
                             invisible="state != 'md_approved' or not is_self"
-                            groups="employee_evaluation_v19c.group_evaluation_employee"/>
+                            groups="employee_evaluation_v19c.group_evaluation_hr"/>
 
                     <!-- Step 5: HR final approval -->
                     <button name="action_hr_approve"

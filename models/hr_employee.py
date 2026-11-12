@@ -1,4 +1,5 @@
-from odoo import models, api, fields
+from odoo import models, api, fields, _
+from odoo.exceptions import AccessError
 
 
 class HREmployee(models.Model):
@@ -27,14 +28,20 @@ class HREmployee(models.Model):
     )
 
     def _compute_evaluation_count(self):
+        has_both = self.env.user.has_group('base.group_system') and self.env.user.has_group('hr.group_hr_manager')
         for employee in self:
-            employee.evaluation_count = self.env['employee.evaluation'].search_count(
-                [('employee_id', '=', employee.id)]
-            )
+            if has_both:
+                employee.evaluation_count = self.env['employee.evaluation'].search_count(
+                    [('employee_id', '=', employee.id)]
+                )
+            else:
+                employee.evaluation_count = 0
 
     def action_open_evaluations(self):
         """Open evaluations for this employee (smart button action)."""
         self.ensure_one()
+        if not (self.env.user.has_group('base.group_system') and self.env.user.has_group('hr.group_hr_manager')):
+            raise AccessError(_("Employee Evaluation is only allowed to users with both Administrator role and Employee Admin access."))
         return {
             'type': 'ir.actions.act_window',
             'name': f'Evaluations - {self.name}',
@@ -49,6 +56,8 @@ class HREmployee(models.Model):
     def action_create_evaluation(self):
         """Create a new evaluation form pre-filled for this employee."""
         self.ensure_one()
+        if not (self.env.user.has_group('base.group_system') and self.env.user.has_group('hr.group_hr_manager')):
+            raise AccessError(_("Employee Evaluation is only allowed to users with both Administrator role and Employee Admin access."))
         return {
             'type': 'ir.actions.act_window',
             'name': f'New Evaluation - {self.name}',
